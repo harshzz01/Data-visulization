@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Study Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: A tab-based SPA with four sections: Unit I Q&A, Unit II Q&A, Interactive Chart Analysis, and an MCQ Quiz. This structure logically separates the different types of study material from the source PDF (definitions, chart interpretation, self-assessment), making it easier for a student to focus on one area at a time. The interactive elements like accordions, chart highlights, and the quiz are designed to promote active learning and recall over passive reading. -->
+    <!-- Visualization & Content Choices: Q&A -> Goal: Inform/Self-Test -> Method: HTML/CSS Accordion -> Interaction: Click to reveal answer -> Justification: Promotes active recall. | Chart Data -> Goal: Analyze/Compare -> Method: Chart.js Grouped Bar Charts -> Interaction: Buttons highlight specific data points related to exam questions -> Justification: Visually connects questions to the data, aiding comprehension. | MCQs -> Goal: Test Knowledge -> Method: Interactive Quiz Interface -> Interaction: Select answer, get immediate feedback, see final score -> Justification: Provides a clear self-assessment tool. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            background-color: #FDFBF5;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #4A5568;
+            color: #FFFFFF;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .accordion-button {
+            transition: background-color 0.3s ease;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            padding: 0 1.5rem;
+        }
+        .accordion-content.open {
+            max-height: 1000px;
+            padding: 1.5rem;
+        }
+        .quiz-option.selected {
+            border-color: #4A5568;
+            background-color: #E2E8F0;
+        }
+        .quiz-option.correct {
+            background-color: #C6F6D5;
+            border-color: #38A169;
+        }
+        .quiz-option.incorrect {
+            background-color: #FED7D7;
+            border-color: #E53E3E;
+        }
+        .chart-container {
+            position: relative; 
+            width: 100%; 
+            max-width: 700px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-700">Data Visualization Exam Prep</h1>
+            <p class="text-lg text-gray-500 mt-2">An interactive guide to help you master the key concepts.</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+            <button data-target="unit1" class="nav-button active text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-md hover:bg-gray-200">Unit I: Data Handling</button>
+            <button data-target="unit2" class="nav-button text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-md hover:bg-gray-200">Unit II: Data Manipulation</button>
+            <button data-target="charts" class="nav-button text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-md hover:bg-gray-200">Interactive Chart Analysis</button>
+            <button data-target="quiz" class="nav-button text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-md hover:bg-gray-200">MCQ Quiz</button>
+        </nav>
+
+        <main>
+            <section id="unit1" class="content-section space-y-4">
+            </section>
+
+            <section id="unit2" class="content-section space-y-4 hidden">
+            </section>
+
+            <section id="charts" class="content-section hidden">
+                <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-center">GDP of Various Countries Analysis</h2>
+                    <p class="text-center text-gray-600 mb-6">This chart compares the GDP of several countries across two 5-year periods. Use the buttons below to highlight the data points related to the exam questions and better understand the comparisons being made.</p>
+                    <div class="chart-container">
+                        <canvas id="gdpChart"></canvas>
+                    </div>
+                    <div id="gdp-chart-controls" class="flex flex-wrap justify-center gap-2 mt-6">
+                        <button data-action="gdp-max-2010" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-sm">Max GDP 2006-10</button>
+                        <button data-action="gdp-max-2005" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-sm">Max GDP 2001-05</button>
+                        <button data-action="gdp-min-2010" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-sm">Min GDP 2006-10</button>
+                        <button data-action="gdp-reset" class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 text-sm">Reset Chart</button>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Ethnicity & Gender Distribution Analysis</h2>
+                    <p class="text-center text-gray-600 mb-6">This chart shows the distribution of males and females across different ethnic groups. The button below will highlight the group with the largest gender disparity, as asked in the exam questions.</p>
+                    <div class="chart-container">
+                        <canvas id="ethnicityChart"></canvas>
+                    </div>
+                    <div id="ethnicity-chart-controls" class="flex flex-wrap justify-center gap-2 mt-6">
+                         <button data-action="ethnicity-disparity" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 text-sm">Show Greatest Disparity</button>
+                         <button data-action="ethnicity-reset" class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 text-sm">Reset Chart</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="quiz" class="content-section hidden">
+                <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
+                    <div id="quiz-container">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold">Knowledge Check</h2>
+                            <div id="quiz-progress" class="text-lg font-semibold text-gray-600"></div>
+                        </div>
+                        <div id="question-container" class="mb-6">
+                            <p id="question-text" class="text-xl mb-4"></p>
+                            <div id="options-container" class="space-y-3"></div>
+                        </div>
+                        <div id="feedback-container" class="mb-4 text-lg font-medium"></div>
+                        <div class="flex justify-end">
+                            <button id="next-btn" class="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 hidden">Next</button>
+                        </div>
+                    </div>
+                    <div id="quiz-results" class="hidden text-center">
+                        <h2 class="text-3xl font-bold mb-4">Quiz Complete!</h2>
+                        <p class="text-xl mb-2">Your Score:</p>
+                        <p id="score-text" class="text-5xl font-bold text-indigo-600 mb-6"></p>
+                        <button id="restart-btn" class="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700">Restart Quiz</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const unit1Data = [
+            { q: "What is data visualization? Describe its role in simplifying complex data.", a: "Data visualization is the process of displaying data in graphical formats such as charts, graphs, and maps. Its primary role is to simplify complex data by making it visually accessible and understandable. By presenting data visually, it becomes much easier to identify trends, patterns, and insights that would be difficult to spot in raw data tables or spreadsheets. This helps in making faster, more informed decisions." },
+            { q: "What is Power BI? Mention its key components and benefits.", a: "Power BI is a business intelligence tool from Microsoft that allows users to connect to various data sources, transform data, and create interactive reports and dashboards.<br><br><strong>Key Components:</strong><ul><li class='ml-4 list-disc'><strong>Power Query:</strong> A data connection and transformation tool used to extract, transform, and load (ETL) data.</li><li class='ml-4 list-disc'><strong>Power Pivot:</strong> A data modeling tool that creates relationships between data tables.</li><li class='ml-4 list-disc'><strong>Power View:</strong> A tool for creating interactive visualizations and dashboards.</li></ul><br><strong>Benefits:</strong><ul><li class='ml-4 list-disc'><strong>Interactive Dashboards:</strong> Create dynamic and interactive reports for data exploration.</li><li class='ml-4 list-disc'><strong>Multiple Data Sources:</strong> Connects to a wide variety of data sources, from Excel to cloud databases.</li><li class='ml-4 list-disc'><strong>Collaboration:</strong> Easy to share reports and dashboards with others.</li></ul>" },
+            { q: "How are statistical methods used in data analysis? Give examples.", a: "Statistical methods are fundamental to data analysis, as they are used to summarize, interpret, and draw conclusions from data. They provide a structured way to understand patterns, measure relationships, and make predictions.<br><br><strong>Examples:</strong><ul><li class='ml-4 list-disc'><strong>Descriptive Statistics:</strong> Using measures like mean, median, mode, and standard deviation to summarize a dataset. For example, finding the average sales amount to understand a typical transaction.</li><li class='ml-4 list-disc'><strong>Inferential Statistics:</strong> Making predictions or drawing conclusions about a larger population based on a sample. For example, using a sample of customer survey data to predict the satisfaction level of all customers.</li></ul>" },
+            { q: "What is the significance of dashboards in data reporting?", a: "Dashboards are significant in data reporting because they provide a high-level, at-a-glance overview of key performance indicators (KPIs) and data trends. They serve as a central hub for monitoring business performance, allowing stakeholders to quickly understand the current status of an organization or project. Their visual nature facilitates faster data-driven decision-making." },
+            { q: "Explain three types of views available in Power BI?", a: "Power BI offers three main views for interacting with data:<br><br><ol class='list-decimal ml-5'><li><strong>Report View:</strong> This is where you create and design your visualizations. It's the primary workspace for building interactive reports and dashboards by dragging and dropping fields, and choosing different chart types.</li><li><strong>Data View:</strong> In this view, you can see your data in a table format, similar to a spreadsheet. It allows you to inspect data, create measures, and perform data validation.</li><li><strong>Model View:</strong> This view is used to manage the relationships between different tables in your data model. It provides a visual representation of how your data sources are connected, which is crucial for creating accurate reports.</li></ol>" },
+            { q: "Differentiate between Countif() and Countifs()", a: "<ul><li class='ml-4 list-disc'><code>COUNTIF()</code> is an Excel function used to count the number of cells within a range that meet a <strong>single</strong> specified condition.</li><li class='ml-4 list-disc'><code>COUNTIFS()</code> is a more advanced function used to count cells that meet <strong>multiple</strong> criteria across multiple ranges.</li><li class='ml-4 list-disc'><em>Example:</em> <code>COUNTIF(A1:A10, \"Sales\")</code> counts all cells with \"Sales\", while <code>COUNTIFS(A1:A10, \"Sales\", B1:B10, \"East\")</code> counts cells with \"Sales\" <em>and</em> \"East\" in the corresponding rows.</li></ul>" },
+            { q: "Explain the building blocks of Power BI.", a: "The core building blocks of Power BI are:<ul><li class='ml-4 list-disc'><strong>Datasets:</strong> Collections of data that you import or connect to.</li><li class='ml-4 list-disc'><strong>Visualizations:</strong> Visual representations of your data, like charts and graphs.</li><li class='ml-4 list-disc'><strong>Reports:</strong> A collection of one or more pages of visualizations.</li><li class='ml-4 list-disc'><strong>Dashboards:</strong> A single page canvas providing a high-level view of key metrics.</li><li class='ml-4 list-disc'><strong>Tiles:</strong> A single visualization on a report or dashboard.</li></ul>" },
+        ];
+
+        const unit2Data = [
+            { q: "What is data manipulation? Explain its role in data analysis.", a: "Data manipulation is the process of cleaning, structuring, and transforming raw data into a more usable format for analysis. It involves tasks like filtering, sorting, merging, and aggregating data. Its role is crucial because raw data is often messy and inconsistent. Manipulation ensures the data is accurate, complete, and properly structured, which is a necessary step before any meaningful analysis can be performed." },
+            { q: "Differentiate between Heat Map, Tree Map, and Smart Chart with examples.", a: "<ul><li class='ml-4 list-disc'><strong>Heat Map:</strong> Represents data with color-coded intensity, typically in a matrix or grid format. The intensity of the color corresponds to the magnitude of the data value. <em>Example:</em> A heatmap showing web traffic on a website, with darker colors indicating more clicks.</li><li class='ml-4 list-disc'><strong>Tree Map:</strong> Displays hierarchical data using nested rectangles. The size of each rectangle is proportional to its value. <em>Example:</em> A treemap showing the market share of different companies.</li><li class='ml-4 list-disc'><strong>Smart Chart:</strong> A dynamic chart that can automatically change based on user interactions or data changes.</li></ul>" },
+            { q: "Compare and contrast Line Chart, Bar Chart, and Scatter Chart in terms of usage.", a: "<ul><li class='ml-4 list-disc'><strong>Line Chart:</strong> Best for visualizing trends over a continuous period, such as time.</li><li class='ml-4 list-disc'><strong>Bar Chart:</strong> Ideal for comparing discrete categories or items.</li><li class='ml-4 list-disc'><strong>Scatter Chart:</strong> Used to show the relationship or correlation between two numerical variables.</li></ul>" },
+            { q: "What is the significance of trendlines and error bars in a chart?", a: "<ul><li class='ml-4 list-disc'><strong>Trendlines:</strong> Used to visualize the direction and pattern of data in a series. They help in forecasting future values.</li><li class='ml-4 list-disc'><strong>Error Bars:</strong> Represent the variability or uncertainty in data. They show the potential range of error for each data point.</li></ul>" },
+            { q: "Describe the function of Pivot Tables.", a: "PivotTables are a powerful tool in spreadsheet applications that allows you to summarize, analyze, explore, and present data. They simplify data summarization by enabling you to quickly rearrange (pivot) columns and rows to look at the data from different perspectives without writing complex formulas." },
+            { q: "How do Slicers enhance interactivity in reports and dashboards?", a: "Slicers enhance interactivity by providing an easy-to-use, visual way to filter data in a PivotTable, chart, or report. This makes it more intuitive for users to interact with the data and see the effects of their selections instantly." },
+            { q: "Differentiate between a Calculated Column and a Measure.", a: "The key difference is when the calculation happens. A <strong>Calculated Column</strong> is computed at the time of data refresh and stored in the model, adding to the file size. A <strong>Measure</strong> is calculated on the fly when you interact with a report and is not stored, making it more flexible and efficient." },
+        ];
+
+        const quizData = [
+            { question: "Which of the following best defines data visualization?", options: ["Cleaning raw data", "Displaying data in graphical formats", "Typing data into Excel", "Sorting and filtering data"], answer: "Displaying data in graphical formats" },
+            { question: "Which Excel function is used to return one value if a condition is TRUE and another if FALSE?", options: ["VLOOKUP", "AND", "OR", "IF"], answer: "IF" },
+            { question: "What is a key feature of Power Map in Excel?", options: ["Sending emails", "3D geographic data visualization", "Performing statistical tests", "Text formatting"], answer: "3D geographic data visualization" },
+            { question: "Power BI is primarily used for:", options: ["Text editing", "Email marketing", "Business Intelligence and reporting", "Drawing diagrams"], answer: "Business Intelligence and reporting" },
+            { question: "What does the COUNTIF function do in Excel?", options: ["Counts all cells", "Counts cells that meet a condition", "Counts unique values", "Counts formulas"], answer: "Counts cells that meet a condition" },
+            { question: "What type of chart is best used to show parts of a whole?", options: ["Line Chart", "Scatter Chart", "Pie Chart", "Column Chart"], answer: "Pie Chart" },
+            { question: "A Heat Map is mainly used to represent:", options: ["Bar data", "Categorical data in lists", "Data with color-coded intensity", "Real-time clock data"], answer: "Data with color-coded intensity" },
+            { question: "What is the primary function of a Sparkline in Excel?", options: ["Create pivot tables", "Embed mini-charts inside a cell", "Perform regression", "Create data models"], answer: "Embed mini-charts inside a cell" },
+            { question: "What are Slicers used for in Excel?", options: ["Formatting text", "Filtering data in PivotTables", "Drawing shapes", "Editing functions"], answer: "Filtering data in PivotTables" },
+            { question: "Which Excel chart is best for visualizing the correlation between two numeric variables?", options: ["Pie Chart", "Area Chart", "Scatter Chart", "Line Chart"], answer: "Scatter Chart" },
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const unit1Section = document.getElementById('unit1');
+            const unit2Section = document.getElementById('unit2');
+
+            function createAccordionItem(item) {
+                const container = document.createElement('div');
+                container.className = 'bg-white rounded-lg shadow-md overflow-hidden';
+                const button = document.createElement('button');
+                button.className = 'accordion-button w-full text-left p-6 font-semibold text-lg hover:bg-gray-100 focus:outline-none flex justify-between items-center';
+                button.innerHTML = `<span>${item.q}</span><span class="transform transition-transform duration-300 text-gray-400 ">▼</span>`;
+                const content = document.createElement('div');
+                content.className = 'accordion-content bg-gray-50 border-t border-gray-200';
+                content.innerHTML = `<div class="prose max-w-none">${item.a}</div>`;
+
+                button.addEventListener('click', () => {
+                    const icon = button.querySelector('span:last-child');
+                    const isOpen = content.classList.contains('open');
+                    document.querySelectorAll('.accordion-content.open').forEach(openContent => {
+                        if (openContent !== content) {
+                           openContent.classList.remove('open');
+                           openContent.previousElementSibling.querySelector('span:last-child').classList.remove('rotate-180');
+                        }
+                    });
+
+                    content.classList.toggle('open');
+                    icon.classList.toggle('rotate-180');
+                });
+
+                container.appendChild(button);
+                container.appendChild(content);
+                return container;
+            }
+
+            unit1Data.forEach(item => unit1Section.appendChild(createAccordionItem(item)));
+            unit2Data.forEach(item => unit2Section.appendChild(createAccordionItem(item)));
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            let gdpChart, ethnicityChart;
+            const initialGdpBgColors = ['#3B82F6', '#EF4444', '#3B82F6', '#EF4444', '#3B82F6', '#EF4444', '#3B82F6', '#EF4444', '#3B82F6', '#EF4444', '#3B82F6', '#EF4444', '#3B82F6', '#EF4444'];
+            const initialEthnicityBgColors = ['#10B981', '#6366F1', '#10B981', '#6366F1', '#10B981', '#6366F1', '#10B981', '#6366F1', '#10B981', '#6366F1'];
+
+            function renderGdpChart() {
+                const ctx = document.getElementById('gdpChart').getContext('2d');
+                if (gdpChart) gdpChart.destroy();
+                gdpChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['UK', 'US', 'China', 'India', 'UAE', 'Russia', 'Australia'],
+                        datasets: [
+                            {
+                                label: 'GDP 2001-2005',
+                                data: [26, 10, 8, 7, 6, 8, 7],
+                                backgroundColor: '#3B82F6',
+                                borderColor: '#1E40AF',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'GDP 2006-2010',
+                                data: [24, 8, 4, 4, 4, 11, 3],
+                                backgroundColor: '#EF4444',
+                                borderColor: '#991B1B',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { beginAtZero: true, title: { display: true, text: 'GDP (in Trillions)' } },
+                            y: { grid: { display: false } }
+                        },
+                        plugins: {
+                            title: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.raw} Trillion`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderEthnicityChart() {
+                const ctx = document.getElementById('ethnicityChart').getContext('2d');
+                if (ethnicityChart) ethnicityChart.destroy();
+                ethnicityChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Asian', 'Black', 'Hispanic', 'Other', 'White'],
+                        datasets: [
+                            {
+                                label: 'Male',
+                                data: [121, 88, 107, 89, 97],
+                                backgroundColor: '#10B981',
+                                borderColor: '#047857',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Female',
+                                data: [104, 104, 96, 94, 100],
+                                backgroundColor: '#6366F1',
+                                borderColor: '#4338CA',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { beginAtZero: true, title: { display: true, text: 'Count' } },
+                            y: { grid: { display: false } }
+                        },
+                        plugins: { title: { display: false } }
+                    }
+                });
+            }
+            
+            renderGdpChart();
+            renderEthnicityChart();
+
+            document.getElementById('gdp-chart-controls').addEventListener('click', (e) => {
+                const action = e.target.dataset.action;
+                if (!action) return;
+
+                const highlightColor = '#FBBF24';
+                const baseColor1 = '#3B82F6';
+                const baseColor2 = '#EF4444';
+
+                gdpChart.data.datasets[0].backgroundColor = Array(7).fill(baseColor1);
+                gdpChart.data.datasets[1].backgroundColor = Array(7).fill(baseColor2);
+
+                if (action === 'gdp-max-2010') {
+                    gdpChart.data.datasets[1].backgroundColor[0] = highlightColor;
+                } else if (action === 'gdp-max-2005') {
+                    gdpChart.data.datasets[0].backgroundColor[0] = highlightColor;
+                } else if (action === 'gdp-min-2010') {
+                    gdpChart.data.datasets[1].backgroundColor[6] = highlightColor;
+                }
+                gdpChart.update();
+            });
+            
+            document.getElementById('ethnicity-chart-controls').addEventListener('click', (e) => {
+                const action = e.target.dataset.action;
+                if (!action) return;
+                
+                const highlightColor = '#FBBF24';
+                const baseColor1 = '#10B981';
+                const baseColor2 = '#6366F1';
+
+                ethnicityChart.data.datasets[0].backgroundColor = Array(5).fill(baseColor1);
+                ethnicityChart.data.datasets[1].backgroundColor = Array(5).fill(baseColor2);
+                
+                if (action === 'ethnicity-disparity') {
+                    ethnicityChart.data.datasets[0].backgroundColor[0] = highlightColor;
+                    ethnicityChart.data.datasets[1].backgroundColor[0] = highlightColor;
+                }
+                ethnicityChart.update();
+            });
+
+            const quizContainer = document.getElementById('quiz-container');
+            const quizResults = document.getElementById('quiz-results');
+            const questionText = document.getElementById('question-text');
+            const optionsContainer = document.getElementById('options-container');
+            const feedbackContainer = document.getElementById('feedback-container');
+            const nextBtn = document.getElementById('next-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const quizProgress = document.getElementById('quiz-progress');
+            const scoreText = document.getElementById('score-text');
+
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let selectedOption = null;
+
+            function startQuiz() {
+                currentQuestionIndex = 0;
+                score = 0;
+                quizContainer.classList.remove('hidden');
+                quizResults.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                selectedOption = null;
+                feedbackContainer.textContent = '';
+                nextBtn.classList.add('hidden');
+                quizProgress.textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+                
+                const currentQuestion = quizData[currentQuestionIndex];
+                questionText.textContent = currentQuestion.question;
+                optionsContainer.innerHTML = '';
+
+                currentQuestion.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.className = 'quiz-option block w-full text-left p-4 border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition';
+                    button.addEventListener('click', () => {
+                        if (selectedOption) return;
+                        selectedOption = button;
+                        document.querySelectorAll('.quiz-option').forEach(btn => btn.classList.remove('selected'));
+                        button.classList.add('selected');
+                        checkAnswer();
+                    });
+                    optionsContainer.appendChild(button);
+                });
+            }
+
+            function checkAnswer() {
+                const currentQuestion = quizData[currentQuestionIndex];
+                const isCorrect = selectedOption.textContent === currentQuestion.answer;
+
+                if (isCorrect) {
+                    score++;
+                    selectedOption.classList.add('correct');
+                    feedbackContainer.textContent = 'Correct!';
+                    feedbackContainer.className = 'mb-4 text-lg font-medium text-green-600';
+                } else {
+                    selectedOption.classList.add('incorrect');
+                    feedbackContainer.textContent = `Wrong! The correct answer is: ${currentQuestion.answer}`;
+                    feedbackContainer.className = 'mb-4 text-lg font-medium text-red-600';
+                }
+                
+                document.querySelectorAll('.quiz-option').forEach(btn => {
+                    if (btn.textContent === currentQuestion.answer) {
+                        btn.classList.add('correct');
+                    }
+                    btn.disabled = true;
+                });
+
+                nextBtn.classList.remove('hidden');
+            }
+
+            nextBtn.addEventListener('click', () => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizData.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            });
+            
+            restartBtn.addEventListener('click', startQuiz);
+
+            function showResults() {
+                quizContainer.classList.add('hidden');
+                quizResults.classList.remove('hidden');
+                scoreText.textContent = `${score} / ${quizData.length}`;
+            }
+
+            startQuiz();
+        });
+    </script>
+</body>
+</html>
